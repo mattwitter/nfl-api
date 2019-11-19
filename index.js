@@ -1,29 +1,24 @@
 const bodyParser = require('body-parser')
 const express = require('express')
-
-const teams = require('./teams.json')
+const Sequelize = require('sequelize')
+const models = require('./models')
 
 const app = express()
 
-app.get('/teams', (request, response) => {
+const Op = Sequelize.Op;
+
+
+app.get('/teams', async (request, response) => {
+    const teams = await models.Teams.findAll()
     response.send(teams)
 })
 
 
-app.get('/teams/:id', (request, response) => {
-    let matchingTeam;
-    console.log(typeof request.params.id)
-    if (isNaN(request.params.id)) {
-        matchingTeam = teams.filter((team) => {
-            return team.abbreviation === request.params.id
-        })
-    }
-    else {
-        matchingTeam = teams.filter((team) => {
-            return team.id === parseInt(request.params.id)
-        })
+app.get('/teams/:id', async (request, response) => {
+    const matchingTeam = await models.Teams.findAll({
+        where: { [Op.or]: [{ id: request.params.id }, { location: request.params.id }, { mascot: request.params.id }, { abbreviation: request.params.id }, { conference: request.params.id }, { division: request.params.id }] }
+    })
 
-    }
     if (matchingTeam.length) {
         response.send(matchingTeam)
     } else {
@@ -33,16 +28,15 @@ app.get('/teams/:id', (request, response) => {
 
 
 
-app.post('/teams', bodyParser.json(), (request, response) => {
-    const { id, location, mascot, abbreviation, conference, division } = request.body
+app.post('/teams', bodyParser.json(), async (request, response) => {
+    const { location, mascot, abbreviation, conference, division } = request.body
 
-    if (!id || !location || !mascot || !abbreviation || !conference || !division) {
-        response.status(400).send('The following attributes are required: id, location, mascot, abbreviation, converence, division')
+    if (!location || !mascot || !abbreviation || !conference || !division) {
+        response.status(400).send('The following attributes are required: location, mascot, abbreviation, conference, division')
     }
 
-    const newTeam = { id, location, mascot, abbreviation, conference, division }
+    const newTeam = await models.Teams.create({ location, mascot, abbreviation, conference, division })
 
-    teams.push(newTeam)
     response.status(201).send(newTeam)
 })
 
