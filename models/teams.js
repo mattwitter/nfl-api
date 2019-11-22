@@ -1,5 +1,5 @@
 const Teams = (connection, Sequelize) => {
-    return connection.define('Teams', {
+    return connection.define('teams', {
         id: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
         location: { type: Sequelize.STRING },
         mascot: { type: Sequelize.STRING },

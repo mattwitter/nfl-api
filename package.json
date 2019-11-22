@@ -4,7 +4,9 @@
   "description": "## Instructions",
   "main": ".eslintrc.js",
   "scripts": {
-    "dev": "./node_modules/.bin/nodemon index.js",
+    "migrate:dev": "./node_modules/.bin/sequelize db:migrate --env development --config ./config/sequelize.json",
+    "server:dev": "./node_modules/.bin/nodemon index.js",
+    "dev": "npm run migrate:dev && npm run server:dev",
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,7 +24,8 @@
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "mysql2": "^2.0.0",
-    "sequelize": "^5.21.2"
+    "sequelize": "^5.21.2",
+    "sequelize-cli": "^5.5.1"
   },
   "devDependencies": {
     "nodemon": "^1.19.4"
